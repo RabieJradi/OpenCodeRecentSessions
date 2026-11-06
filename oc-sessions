@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# oc-sessions - list recent opencode sessions with launch commands
+# Usage: oc-sessions [N]        list N recent sessions (default 10)
+#        oc-sessions -a [N]     include child/subagent sessions
+#        oc-sessions -h         help
+
+set -euo pipefail
+
+DB="${OPENCODE_DB:-$HOME/.local/share/opencode/opencode.db}"
+COUNT=10
+INCLUDE_CHILDREN=false
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -a|--all) INCLUDE_CHILDREN=true ;;
+    -h|--help) sed -n '2,5p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    *) [[ "$1" =~ ^[0-9]+$ ]] || { echo "error: count must be a number ($0 -h for help)" >&2; exit 1; }; COUNT="$1" ;;
+  esac
+  shift
+done
+
+[ -f "$DB" ] || { echo "error: database not found: $DB" >&2; exit 1; }
+command -v sqlite3 >/dev/null || { echo "error: sqlite3 not installed" >&2; exit 1; }
+
+CHILD_FILTER="WHERE s.parent_id IS NULL AND s.time_archived IS NULL"
+$INCLUDE_CHILDREN && CHILD_FILTER="WHERE s.time_archived IS NULL"
+
+sqlite3 -noheader -separator '|' "$DB" "
+  SELECT
+    datetime(s.time_updated/1000,'unixepoch','localtime'),
+    s.title,
+    s.id,
+    s.directory
+  FROM session s
+  $CHILD_FILTER
+  ORDER BY s.time_updated DESC
+  LIMIT $COUNT;" 2>/dev/null | \
+awk -F'|' '{
+  printf "%-19s %-50s (%s)\n", $1, $2, $4
+  printf "        cd %s && opencode --session=%s\n\n", $4, $3
+}'
