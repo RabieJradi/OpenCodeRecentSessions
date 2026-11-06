@@ -28,16 +28,56 @@ ln -s ~/Code/YunohostGits/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-ses
 
 `~/.local/bin` must be on your `PATH` (add `export PATH="$HOME/.local/bin:$PATH"` to your shell profile if needed).
 
+2. Install the man page:
+
+```bash
+mkdir -p ~/.local/share/man/man1
+ln -sf <this-repo>/oc-sessions.1 ~/.local/share/man/man1/oc-sessions.1
+```
+
+Then `man oc-sessions` works with no MANPATH configuration (man-db 2.13 searches `~/.local/share/man` by default).
+
+The man page is generated from `oc-sessions.1.md` with pandoc:
+
+```bash
+pandoc --standalone --to man -o oc-sessions.1 oc-sessions.1.md
+```
+
 ## Usage
 
 ```bash
 oc-sessions           # list 10 most recent sessions, child/subagent sessions excluded
 oc-sessions 20        # list last 20 sessions
 oc-sessions -a        # include child/subagent sessions
+oc-sessions -f tsv 5  # pipe-friendly output formats: pretty|tsv|json|cmd
 oc-sessions -h        # show help
 ```
 
 Options can be combined, e.g. `oc-sessions -a 5`.
+
+### Output formats (`-f`)
+
+| format | description |
+|---|---|
+| `pretty` | human-readable listing with launch commands (default) |
+| `tsv` | one row per session, `\|`-separated: `updated\|title\|id\|directory` |
+| `json` | JSON array of `{updated, title, id, directory}` objects |
+| `cmd` | only the `cd <dir> && opencode --session=<id>` launch lines |
+
+Examples for scripting:
+
+```bash
+# get the ID of the most recent session
+oc-sessions -f json 1 | jq -r '.[0].id'
+
+# grab the last 5 launch commands and review them
+oc-sessions -f cmd 5
+
+# find sessions for one project
+oc-sessions -f tsv 50 | grep YunohostGits | cut -d'|' -f3
+```
+
+Note: fields are separated by `|` so titles with commas stay intact; titles containing `|` are not expected.
 
 ## How it works
 

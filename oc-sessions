@@ -1,28 +1,42 @@
 #!/usr/bin/env bash
 # oc-sessions - list recent opencode sessions with launch commands
-# Usage: oc-sessions [N]        list N recent sessions (default 10)
-#        oc-sessions -a [N]     include child/subagent sessions
-#        oc-sessions -h         help
+# Usage: oc-sessions [N]             list N recent sessions (default 10)
+#        oc-sessions -a [N]          include child/subagent sessions
+#        oc-sessions -f FORMAT [N]   output format: pretty|tsv|json|cmd
+#        oc-sessions -h              help
+#
+# Formats:
+#   pretty  human-readable listing with launch commands (default)
+#   tsv     one row per session, |-separated: updated|title|id|directory
+#   json    array of objects: {updated,title,id,directory}
+#   cmd     just the "cd <dir> && opencode --session=<id>" lines
 
 set -euo pipefail
 
 DB="${OPENCODE_DB:-$HOME/.local/share/opencode/opencode.db}"
+FORMAT=pretty
 COUNT=10
 INCLUDE_CHILDREN=false
 while [ $# -gt 0 ]; do
   case "$1" in
     -a|--all) INCLUDE_CHILDREN=true ;;
-    -h|--help) sed -n '2,5p' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    -f|--format) [[ -n "${2:-}" ]] || { echo "error: -f requires an argument" >&2; exit 1; }; FORMAT="$2"; shift ;;
+    -h|--help) sed -n '2,11p' "$0" | sed 's/^#\{0,1\} \{0,1\}//'; exit 0 ;;
     *) [[ "$1" =~ ^[0-9]+$ ]] || { echo "error: count must be a number ($0 -h for help)" >&2; exit 1; }; COUNT="$1" ;;
   esac
   shift
 done
+
+case "$FORMAT" in pretty|tsv|json|cmd) ;; *) echo "error: unknown format '$FORMAT' (pretty|tsv|json|cmd)" >&2; exit 1 ;; esac
 
 [ -f "$DB" ] || { echo "error: database not found: $DB" >&2; exit 1; }
 command -v sqlite3 >/dev/null || { echo "error: sqlite3 not installed" >&2; exit 1; }
 
 CHILD_FILTER="WHERE s.parent_id IS NULL AND s.time_archived IS NULL"
 $INCLUDE_CHILDREN && CHILD_FILTER="WHERE s.time_archived IS NULL"
+
+TMPF=$(mktemp)
+trap 'rm -f "$TMPF"' EXIT
 
 sqlite3 -noheader -separator '|' "$DB" "
   SELECT
@@ -33,8 +47,42 @@ sqlite3 -noheader -separator '|' "$DB" "
   FROM session s
   $CHILD_FILTER
   ORDER BY s.time_updated DESC
-  LIMIT $COUNT;" 2>/dev/null | \
-awk -F'|' '{
-  printf "%-19s %-50s (%s)\n", $1, $2, $4
-  printf "        cd %s && opencode --session=%s\n\n", $4, $3
-}'
+  LIMIT $COUNT;" 2>/dev/null > "$TMPF" || true
+
+escape_json() {
+  local s=$1
+  s=${s//\\/\\\\}
+  s=${s//\"/\\\"}
+  s=${s//$'\t'/\\t}
+  s=${s//$'\n'/\\n}
+  s=${s//$'\r'/\\r}
+  printf '%s' "$s"
+}
+
+case "$FORMAT" in
+  pretty)
+    awk -F'|' '{
+      printf "%-19s %-50s (%s)\n", $1, $2, $4
+      printf "        cd %s && opencode --session=%s\n\n", $4, $3
+    }' "$TMPF"
+    ;;
+  tsv)
+    cat "$TMPF"
+    ;;
+  cmd)
+    awk -F'|' '{ printf "cd %s && opencode --session=%s\n", $4, $3 }' "$TMPF"
+    ;;
+  json)
+    printf '['
+    first=true
+    while IFS= read -r row; do
+      IFS='|' read -r dated title id dir <<< "$row"
+      $first || printf ,
+      first=false
+      printf '\n  {"updated":"%s","title":"%s","id":"%s","directory":"%s"}' \
+        "$(escape_json "$dated")" "$(escape_json "$title")" "$(escape_json "$id")" "$(escape_json "$dir")"
+    done < "$TMPF"
+    [[ $first == true ]] && printf ']' || printf '\n]'
+    echo ""
+    ;;
+esac
