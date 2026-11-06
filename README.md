@@ -5,14 +5,12 @@ A small CLI tool that lists your recent [opencode](https://opencode.ai) sessions
 ## Example output
 
 ```
-2026-11-04 11:24:56 Debugging missing gus notifications              (/home/you/Code/project)
-        cd /home/you/Code/project && opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
+2026-11-04 11:24:56 Debugging missing notifications              (/home/you/Code/project)
+        cd /home/you/Code/MyProjectA && opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
 
 2026-11-03 13:45:28 Continuing previous work                         (/home/you/Code/other)
-        cd /home/you/Code/other && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
+        cd /home/you/Code/MyProjectB && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
 ```
-
-Note: you must `cd` into the session's directory *before* launching, because opencode resolves sessions per project directory.
 
 ## Install
 
@@ -21,9 +19,9 @@ Requirements: `bash`, `sqlite3`, and opencode.
 1. Clone this repo and symlink the script into a directory on your `PATH`:
 
 ```bash
-git clone <this-repo> ~/Code/OpencodeRecentSessions
+git clone <this-repo> ~/Code/OpenCodeRecentSessions
 mkdir -p ~/.local/bin
-ln -s ~/Code/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
+ln -s ~/Code/OpenCodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
 ```
 
 `~/.local/bin` must be on your `PATH` (add `export PATH="$HOME/.local/bin:$PATH"` to your shell profile if needed).

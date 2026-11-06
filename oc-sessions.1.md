@@ -84,7 +84,7 @@ Find sessions belonging to one project:
 
 Symlink the script into a directory on your `PATH`:
 
-    ln -s ~/Code/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
+    ln -s ~/Code/OpenCodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
 
 Install this man page:
 
