@@ -78,13 +78,13 @@ Prepare the launch commands for the last 5 sessions:
 
 Find sessions belonging to one project:
 
-    oc-sessions -f tsv 50 | grep YunohostGits | cut -d'|' -f3
+    oc-sessions -f tsv 50 | grep -i myproject | cut -d'|' -f3
 
 ## INSTALL
 
 Symlink the script into a directory on your `PATH`:
 
-    ln -s ~/Code/YunohostGits/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
+    ln -s ~/Code/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
 
 Install this man page:
 

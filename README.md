@@ -21,9 +21,9 @@ Requirements: `bash`, `sqlite3`, and opencode.
 1. Clone this repo and symlink the script into a directory on your `PATH`:
 
 ```bash
-git clone <this-repo> ~/Code/YunohostGits/OpencodeRecentSessions
+git clone <this-repo> ~/Code/OpencodeRecentSessions
 mkdir -p ~/.local/bin
-ln -s ~/Code/YunohostGits/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
+ln -s ~/Code/OpencodeRecentSessions/oc-sessions ~/.local/bin/oc-sessions
 ```
 
 `~/.local/bin` must be on your `PATH` (add `export PATH="$HOME/.local/bin:$PATH"` to your shell profile if needed).
@@ -74,7 +74,7 @@ oc-sessions -f json 1 | jq -r '.[0].id'
 oc-sessions -f cmd 5
 
 # find sessions for one project
-oc-sessions -f tsv 50 | grep YunohostGits | cut -d'|' -f3
+oc-sessions -f tsv 50 | grep -i myproject | cut -d'|' -f3
 ```
 
 Note: fields are separated by `|` so titles with commas stay intact; titles containing `|` are not expected.

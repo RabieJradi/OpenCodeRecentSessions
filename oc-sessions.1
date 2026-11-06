@@ -73,13 +73,13 @@ oc\-sessions \-f cmd 5
 Find sessions belonging to one project:
 .IP
 .EX
-oc\-sessions \-f tsv 50 | grep YunohostGits | cut \-d\[aq]|\[aq] \-f3
+oc\-sessions \-f tsv 50 | grep \-i myproject | cut \-d\[aq]|\[aq] \-f3
 .EE
 .SS INSTALL
 Symlink the script into a directory on your \f[CR]PATH\f[R]:
 .IP
 .EX
-ln \-s \[ti]/Code/YunohostGits/OpencodeRecentSessions/oc\-sessions \[ti]/.local/bin/oc\-sessions
+ln \-s \[ti]/Code/OpencodeRecentSessions/oc\-sessions \[ti]/.local/bin/oc\-sessions
 .EE
 .PP
 Install this man page:
