@@ -42,21 +42,6 @@ cd /home/you/Code/MyProjectB && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mv
 | `json` | JSON array of `{updated, title, id, directory}` objects |
 | `cmd` | only the `cd <dir> && opencode --session=<id>` launch lines |
 
-Examples for scripting:
-
-```bash
-# get the ID of the most recent session
-oc-sessions -f json 1 | jq -r '.[0].id'
-
-# grab the last 5 launch commands and review them
-oc-sessions -f cmd 5
-
-# find sessions for one project
-oc-sessions -f tsv 50 | grep -i myproject | cut -d'|' -f3
-```
-
-Note: fields are separated by `|` so titles with commas stay intact; titles containing `|` are not expected.
-
 ## How it works
 
 - Reads `~/.local/share/opencode/opencode.db` (SQLite) directly.
