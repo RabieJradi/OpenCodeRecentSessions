@@ -19,13 +19,14 @@ oc-sessions — list recent opencode sessions with ready-to-run launch commands
 ## DESCRIPTION
 
 **oc-sessions** lists your recent *opencode* sessions, newest first, together
-with the `cd ... && opencode --session=...` command needed to reopen each one.
-Sessions are persisted by opencode in an SQLite database
+with the `opencode --session=...` command needed to reopen each one. Sessions
+are persisted by opencode in an SQLite database
 (`~/.local/share/opencode/opencode.db`), so the listing works even after a
 reboot or a lost terminal.
 
-Note: you must `cd` into a session's directory before launching, because
-opencode resolves sessions per project directory.
+The `directory` column is informational: when a full session ID is passed,
+opencode resolves the project from the session itself, so you can launch from
+any directory.
 
 ## OPTIONS
 
@@ -53,8 +54,8 @@ opencode resolves sessions per project directory.
 : JSON array of `{updated, title, id, directory}` objects.
 
 `cmd`
-: Only the `cd <dir> && opencode --session=<id>` launch lines, one per
-  session — convenient for scripting.
+: Only the `opencode --session=<id>` launch lines, one per session —
+  convenient for scripting.
 
 ## ENVIRONMENT
 

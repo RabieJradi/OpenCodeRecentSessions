@@ -14,23 +14,23 @@ oc-sessions -h        # show help
 
 Options can be combined, e.g. `oc-sessions -a 5`.
 
-`pretty` output (default) shows the session details plus its launch command:
+`pretty` output (default) shows the session details plus its launch command (launching from any directory works — opencode resolves the project from the session ID):
 
 ```bash
 $ oc-sessions 2
 2026-11-04 11:24:56 Debugging missing notifications              (/home/you/Code/MyProjectA)
-        cd /home/you/Code/MyProjectA && opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
+        opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
 
 2026-11-03 13:45:28 Continuing previous work                     (/home/you/Code/MyProjectB)
-        cd /home/you/Code/MyProjectB && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
+        opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
 ```
 
 `cmd` output is just the launch lines, one per session:
 
 ```bash
 $ oc-sessions -f cmd 2
-cd /home/you/Code/MyProjectA && opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
-cd /home/you/Code/MyProjectB && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
+opencode --session=ses_e5a1c8fe2ffeRJwc6mdf3EbX1Z
+opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mve
 ```
 
 ### Output formats (`-f`)
@@ -40,7 +40,7 @@ cd /home/you/Code/MyProjectB && opencode --session=ses_e6df02b25ffeU7Q6AYCr6g3mv
 | `pretty` | human-readable listing with launch commands (default) |
 | `tsv` | one row per session, `\|`-separated: `updated\|title\|id\|directory` |
 | `json` | JSON array of `{updated, title, id, directory}` objects |
-| `cmd` | only the `cd <dir> && opencode --session=<id>` launch lines |
+| `cmd` | only the `opencode --session=<id>` launch lines |
 
 ## How it works
 

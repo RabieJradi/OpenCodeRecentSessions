@@ -9,7 +9,7 @@
 #   pretty  human-readable listing with launch commands (default)
 #   tsv     one row per session, |-separated: updated|title|id|directory
 #   json    array of objects: {updated,title,id,directory}
-#   cmd     just the "cd <dir> && opencode --session=<id>" lines
+#   cmd     just the "opencode --session=<id>" lines
 
 set -euo pipefail
 
@@ -63,14 +63,14 @@ case "$FORMAT" in
   pretty)
     awk -F'|' '{
       printf "%-19s %-50s (%s)\n", $1, $2, $4
-      printf "        cd %s && opencode --session=%s\n\n", $4, $3
+      printf "        opencode --session=%s\n\n", $3
     }' "$TMPF"
     ;;
   tsv)
     cat "$TMPF"
     ;;
   cmd)
-    awk -F'|' '{ printf "cd %s && opencode --session=%s\n", $4, $3 }' "$TMPF"
+    awk -F'|' '{ printf "opencode --session=%s\n", $3 }' "$TMPF"
     ;;
   json)
     printf '['

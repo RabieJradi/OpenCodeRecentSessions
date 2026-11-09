@@ -8,15 +8,15 @@ launch commands
 \f[B]oc\-sessions\f[R] [\f[I]OPTIONS\f[R]] [\f[I]COUNT\f[R]]
 .SS DESCRIPTION
 \f[B]oc\-sessions\f[R] lists your recent \f[I]opencode\f[R] sessions,
-newest first, together with the
-\f[CR]cd ... && opencode \-\-session=...\f[R] command needed to reopen
-each one.
+newest first, together with the \f[CR]opencode \-\-session=...\f[R]
+command needed to reopen each one.
 Sessions are persisted by opencode in an SQLite database
 (\f[CR]\[ti]/.local/share/opencode/opencode.db\f[R]), so the listing
 works even after a reboot or a lost terminal.
 .PP
-Note: you must \f[CR]cd\f[R] into a session\[cq]s directory before
-launching, because opencode resolves sessions per project directory.
+The \f[CR]directory\f[R] column is informational: when a full session ID
+is passed, opencode resolves the project from the session itself, so you
+can launch from any directory.
 .SS OPTIONS
 .TP
 \f[CR]\-a\f[R], \f[CR]\-\-all\f[R]
@@ -44,8 +44,8 @@ One row per session, \f[CR]|\f[R]\-separated:
 JSON array of \f[CR]{updated, title, id, directory}\f[R] objects.
 .TP
 \f[CR]cmd\f[R]
-Only the \f[CR]cd <dir> && opencode \-\-session=<id>\f[R] launch lines,
-one per session \[em] convenient for scripting.
+Only the \f[CR]opencode \-\-session=<id>\f[R] launch lines, one per
+session \[em] convenient for scripting.
 .SS ENVIRONMENT
 .TP
 \f[CR]OPENCODE_DB\f[R]
